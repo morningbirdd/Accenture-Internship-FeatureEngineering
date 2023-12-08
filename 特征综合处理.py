@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+from seaborn import barplot
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -9,7 +11,6 @@ from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
-
 # 使用黑体
 plt.rcParams['font.sans-serif'] = ['SimHei'] 
 plt.rcParams['axes.unicode_minus'] = False  
@@ -28,7 +29,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random
 model = LinearRegression()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-print('线性模型（基模型）的均方误差：', mean_squared_error(y_test, y_pred))
+print('使用enginesize的线性模型（基模型）的均方误差：', mean_squared_error(y_test, y_pred))
 
 # 使用所有数值变量进行拟合
 X = df[numeric_vars]
@@ -39,37 +40,50 @@ y_pred = model.predict(X_test)
 print('使用所有数值变量的线性模型的均方误差：', mean_squared_error(y_test, y_pred))
 # 权重可视化
 plt.figure(figsize=(10, 5))
-sns.barplot(x=model.coef_, y=numeric_vars)
+barplot = sns.barplot(x=model.coef_, y=numeric_vars)
 plt.xlabel('权重')
 plt.ylabel('特征')
 plt.title('特征权重&线性回归')
+# 在条形图上添加数值标签
+for p in barplot.patches:
+    width = p.get_width()
+    plt.text(5+p.get_width(), p.get_y()+0.55*p.get_height(),
+             '{:1.2f}'.format(width),
+             ha='center', va='center')
+
 plt.show()
-#############################
+
+#######
 # 使用线性核函数的支持向量机
 model = SVR(kernel='linear')
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-print('使用一个数值变量的支持向量机模型的均方误差：', mean_squared_error(y_test, y_pred))
+print('使用enginesize的支持向量机模型的均方误差：', mean_squared_error(y_test, y_pred))
 
 # 使用所有数值变量进行拟合
 X = df[numeric_vars]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=1)
 
-# 使用线性核函数的支持向量机
+# 使用支持向量机
 model = SVR(kernel='linear')
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 print('使用所有数值变量的支持向量机模型的均方误差：', mean_squared_error(y_test, y_pred))
 # 权重可视化
 plt.figure(figsize=(10, 5))
-sns.barplot(x=model.coef_[0], y=numeric_vars)
+barplot = sns.barplot(x=model.coef_[0], y=numeric_vars)
 plt.xlabel('权重')
 plt.ylabel('特征')
 plt.title('特征权重&支持向量机')
+for p in barplot.patches:
+    width = p.get_width()
+    plt.text(5+p.get_width(), p.get_y()+0.55*p.get_height(),
+             '{:1.2f}'.format(width),
+             ha='center', va='center')
 plt.show()
 
-##############################
-# 使用一个数值变量建立决策树模型
+################
+# 使用enginesize建立决策树模型
 X = df[['enginesize']]
 y = df['price']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=1)
@@ -77,7 +91,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random
 model = DecisionTreeRegressor()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-print('使用一个数值变量的决策树模型的均方误差：', mean_squared_error(y_test, y_pred))
+print('使用enginesize的决策树模型的均方误差：', mean_squared_error(y_test, y_pred))
 
 # 使用所有数值变量建立决策树模型
 X = df[numeric_vars]
@@ -88,15 +102,24 @@ model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 print('使用所有数值变量的决策树模型的均方误差：', mean_squared_error(y_test, y_pred))
 # 权重可视化
+# 权重可视化
 plt.figure(figsize=(10, 5))
-sns.barplot(x=model.feature_importances_, y=numeric_vars)
 plt.xlabel('重要性')
 plt.ylabel('特征')
 plt.title('特征重要性&决策树')
+barplot = sns.barplot(x=model.feature_importances_, y=numeric_vars)
+
+# 在条形图上添加数值标签
+for p in barplot.patches:
+    width = p.get_width()
+    plt.text(width, p.get_y()+0.55*p.get_height(),
+             '{:1.2f}'.format(width),
+             ha='left', va='center')
+
 plt.show()
 
-###################################
-# 使用一个数值变量建立随机森林模型
+###################
+# 使用enginesize建立随机森林模型
 X = df[['enginesize']]
 y = df['price']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.001, random_state=1)
@@ -104,7 +127,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.001, rando
 model = RandomForestRegressor()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
-print('使用一个数值变量的随机森林模型的均方误差：', mean_squared_error(y_test, y_pred))
+print('使用enginesize的随机森林模型的均方误差：', mean_squared_error(y_test, y_pred))
 
 # 使用所有数值变量建立随机森林模型
 X = df[numeric_vars]
@@ -114,7 +137,7 @@ model = RandomForestRegressor()
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 print('使用所有数值变量的随机森林模型的均方误差：', mean_squared_error(y_test, y_pred))
-##################################
+###############
 
 # 对类别变量进行编码
 for var in categorical_vars:
@@ -123,18 +146,23 @@ for var in categorical_vars:
 
 # 权重可视化
 plt.figure(figsize=(10, 5))
-sns.barplot(x=model.feature_importances_, y=numeric_vars)
 plt.xlabel('重要性')
 plt.ylabel('特征')
 plt.title('特征重要性&随机森林')
-plt.show() 
+barplot = sns.barplot(x=model.feature_importances_, y=numeric_vars)
+
+# 在条形图上添加数值标签
+for p in barplot.patches:
+    width = p.get_width()
+    plt.text(width, p.get_y()+0.55*p.get_height(),
+             '{:1.2f}'.format(width),
+             ha='left', va='center')
+
+plt.show()
 
 #对数值型数据进行标准化
-#初始标准化器
 scaler = StandardScaler()
-#对数值型数据进行标准化
 df[numeric_vars] = scaler.fit_transform(df[numeric_vars])
 ## 将ndarray数组对象包装成DataFrame对象
 df=pd.DataFrame(df,columns=numeric_vars+categorical_vars )
-#打印出新的数据集的信息
 print(df.info())
